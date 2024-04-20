@@ -40,6 +40,24 @@ class CustomerUser(AbstractUser):
     shipping_address = models.TextField(blank=True)
     billing_address = models.TextField(blank=True)
 
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='user_customers',  # Custom related_name for groups
+        blank=True,
+        verbose_name='groups',
+        help_text=('The groups this user belongs to. A user will get'
+                   'all permissions granted to each of their groups.')
+    )
+
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        # Custom related_name for user_permissions
+        related_name='user_customers',
+        blank=True,
+        verbose_name='user permissions',
+        help_text='Specific permissions for this user.'
+    )
+
     def __str__(self):
         """Return the username as the string representation of the user."""
         return f'{self.username}'
