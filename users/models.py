@@ -29,7 +29,17 @@ from django.contrib.auth.models import AbstractUser
 
 
 class CustomerUser(AbstractUser):
+    """Custom user model representing user profiles with extended fields.
+
+    This model extends the default Django user model (`AbstractUser`) with
+    additional fields for user profile management, including date of birth,
+    phone number, shipping address and billing address.
+    """
     date_of_birth = models.DateField(blank=True, null=True)
     phone_number = models.CharField(max_length=20, blank=True)
     shipping_address = models.TextField(blank=True)
     billing_address = models.TextField(blank=True)
+
+    def __str__(self):
+        """Return the username as the string representation of the user."""
+        return f'{self.username}'
