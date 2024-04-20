@@ -26,6 +26,7 @@ Example:
 """
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 
 
 class CustomerUser(AbstractUser):
@@ -36,7 +37,18 @@ class CustomerUser(AbstractUser):
     phone number, shipping address and billing address.
     """
     date_of_birth = models.DateField(blank=True, null=True)
-    phone_number = models.CharField(max_length=20, blank=True)
+    phone_number = models.CharField(
+        max_length=20,
+        blank=True,
+        validators=[
+            RegexValidator(
+                regex=r'^[0-9*+#-]+$',
+                message=('Phone number can only contain '
+                         'digits (0-9) and symbols (*+#-).'),
+                code='invalid_phone_number'
+            )
+        ]
+    )
     shipping_address = models.TextField(blank=True)
     billing_address = models.TextField(blank=True)
 
