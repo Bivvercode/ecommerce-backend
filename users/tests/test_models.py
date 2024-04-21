@@ -12,7 +12,8 @@ class TestCustomerUserModel():
             username='testuser',
             email='test@example.com',
             first_name='Test',
-            last_name='User'
+            last_name='User',
+            password='Password123'
         )
 
         # Assert that the string representation matches the expected format
@@ -24,6 +25,29 @@ class TestCustomerUserModel():
         """Test that CustomerUser requires username."""
         with pytest.raises(ValidationError):
             CustomerUser.objects.create(
+                email='test@example.com',
+                first_name='Test',
+                last_name='User',
+                password='Password123'
+            )
+
+    @pytest.mark.django_db
+    def test_customer_user_missing_email(self):
+        """Test that CustomerUser requires email."""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='testuser',
+                first_name='Test',
+                last_name='User',
+                password='Password123'
+            )
+
+    @pytest.mark.django_db
+    def test_customer_user_missing_password(self):
+        """Test that CustomerUser requires password."""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='testuser',
                 email='test@example.com',
                 first_name='Test',
                 last_name='User'
