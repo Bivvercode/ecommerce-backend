@@ -70,6 +70,6 @@ class CustomerUser(AbstractUser):
         help_text='Specific permissions for this user.'
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the username as the string representation of the user."""
         return f'{self.username}'
