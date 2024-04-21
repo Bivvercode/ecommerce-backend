@@ -1,9 +1,11 @@
 import pytest
-from users.models import CustomerUser
 from django.core.exceptions import ValidationError
+from users.models import CustomerUser
 
 
 class TestCustomerUserModel():
+    """Test cases for the CustomerUser model."""
+
     @pytest.mark.django_db
     def test_customer_user_str_representation(self):
         """Test the string representation (__str__ method) of CustomUser."""
