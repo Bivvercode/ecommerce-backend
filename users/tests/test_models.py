@@ -63,3 +63,14 @@ class TestCustomerUserModel():
                 last_name='User',
                 password='Password123'
             )
+
+    @pytest.mark.django_db
+    def test_customer_user_missing_last_name(self):
+        """Test that CustomerUser requires last name."""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='testuser',
+                email='test@example.com',
+                first_name='Test',
+                password='Password123'
+            )
