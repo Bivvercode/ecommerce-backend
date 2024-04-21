@@ -27,6 +27,7 @@ Example:
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 
 
 class CustomerUser(AbstractUser):
@@ -69,6 +70,16 @@ class CustomerUser(AbstractUser):
         verbose_name='user permissions',
         help_text='Specific permissions for this user.'
     )
+
+    def clean(self):
+        super().clean()
+
+        if not self.username:
+            raise ValidationError("Name cannot be empty.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         """Return the username as the string representation of the user."""
