@@ -1,3 +1,24 @@
+"""Unit tests for the CustomerUser model.
+
+This module contains unit tests specifically designed to validate the behavior
+of the `CustomerUser` model in the `users` app of the Django project.
+
+The tests cover various aspects of the `CustomerUser` model, including field
+validation, string representation, and required field constraints.
+
+Classes:
+    TestCustomerUserModel: Test cases for the `CustomerUser` model.
+
+Usage:
+    Run this module using pytest to execute the defined
+    unit tests for the `CustomerUser` model.
+
+Example:
+    To run all tests in this module using pytest:
+
+    $ pytest users/tests/test_customer_user_model.py
+"""
+
 import pytest
 from django.core.exceptions import ValidationError
 from users.models import CustomerUser
