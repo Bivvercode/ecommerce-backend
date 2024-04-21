@@ -74,3 +74,15 @@ class TestCustomerUserModel():
                 first_name='Test',
                 password='Password123'
             )
+
+    @pytest.mark.django_db
+    def test_customer_user_invalid_email(self):
+        """Test that CustomerUser requires a valid email."""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='testuser',
+                email='test.example.com',
+                first_name='Test',
+                last_name='User',
+                password='Password123'
+            )
