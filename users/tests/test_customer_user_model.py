@@ -111,12 +111,24 @@ class TestCustomerUserModel():
             )
 
     @pytest.mark.django_db
-    def test_customer_user_password_max_length(self):
+    def test_customer_user_username_max_length(self):
         """Test that CustomerUser is not allowing username over max length"""
         with pytest.raises(ValidationError):
             CustomerUser.objects.create(
                 username='Twenty-1_characters.0',
                 email='test@example.com',
+                first_name='Test',
+                last_name='User',
+                password='Password123'
+            )
+
+    @pytest.mark.django_db
+    def test_customer_user_username_min_length(self):
+        """Test that CustomerUser is not allowing username under min length"""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='cat',
+                email='test.example.com',
                 first_name='Test',
                 last_name='User',
                 password='Password123'
