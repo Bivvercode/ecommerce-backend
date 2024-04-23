@@ -139,9 +139,24 @@ class TestCustomerUserModel():
         """Test that CustomerUser is not allowing password under min length"""
         with pytest.raises(ValidationError):
             CustomerUser.objects.create(
-                username='cat',
+                username='TestUser',
                 email='test.example.com',
                 first_name='Test',
                 last_name='User',
                 password='Short@1'
+            )
+
+    @pytest.mark.django_db
+    def test_customer_user_phone_number_max_length(self):
+        """
+        Test that CustomerUser is not allowing phone number over max length
+        """
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='TestUser',
+                email='test.example.com',
+                first_name='Test',
+                last_name='User',
+                phone_number='+46700112233445566721'
+                password='Password123'
             )
