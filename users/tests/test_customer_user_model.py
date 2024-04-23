@@ -133,3 +133,15 @@ class TestCustomerUserModel():
                 last_name='User',
                 password='Password123'
             )
+
+    @pytest.mark.django_db
+    def test_customer_user_password_min_length(self):
+        """Test that CustomerUser is not allowing password under min length"""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='cat',
+                email='test.example.com',
+                first_name='Test',
+                last_name='User',
+                password='Short@1'
+            )
