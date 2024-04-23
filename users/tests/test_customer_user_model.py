@@ -157,6 +157,6 @@ class TestCustomerUserModel():
                 email='test.example.com',
                 first_name='Test',
                 last_name='User',
-                phone_number='+46700112233445566721'
+                phone_number='+46700112233445566721',
                 password='Password123'
             )
