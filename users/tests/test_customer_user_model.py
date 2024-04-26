@@ -128,7 +128,7 @@ class TestCustomerUserModel():
         with pytest.raises(ValidationError):
             CustomerUser.objects.create(
                 username='cat',
-                email='test.example.com',
+                email='test@example.com',
                 first_name='Test',
                 last_name='User',
                 password='Password123'
@@ -140,7 +140,7 @@ class TestCustomerUserModel():
         with pytest.raises(ValidationError):
             CustomerUser.objects.create(
                 username='TestUser',
-                email='test.example.com',
+                email='test@example.com',
                 first_name='Test',
                 last_name='User',
                 password='Short@1'
@@ -154,9 +154,28 @@ class TestCustomerUserModel():
         with pytest.raises(ValidationError):
             CustomerUser.objects.create(
                 username='TestUser',
-                email='test.example.com',
+                email='test@example.com',
                 first_name='Test',
                 last_name='User',
                 phone_number='+46700112233445566721',
+                password='Password123'
+            )
+
+    @pytest.mark.django_db
+    def test_uniqueness_username(self):
+        """Test that CustomerUser username is unique"""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='Duplicate',
+                email='test@example.com',
+                first_name='Test',
+                last_name='User',
+                password='Password123'
+            )
+            CustomerUser.objects.create(
+                username='Duplicate',
+                email='test2@example.com',
+                first_name='Test',
+                last_name='User',
                 password='Password123'
             )
