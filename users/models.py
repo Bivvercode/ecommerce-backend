@@ -108,6 +108,18 @@ class CustomerUser(AbstractUser):
                 'Password must contain at least one symbol.'
             )
 
+    def validate_username_complexity(self, value: str):
+        """Validate username complexity."""
+        if len(value) < 4:
+            raise ValidationError(
+                'Username must be at least 4 characters long.'
+            )
+
+        if len(value) > 20:
+            raise ValidationError(
+                'Username cannot be more than 20 characters long.'
+            )
+
     def clean(self):
         super().clean()
 
@@ -127,6 +139,7 @@ class CustomerUser(AbstractUser):
             raise ValidationError('Last name cannot be empty.')
 
         self.validate_password_complexity(self.password)
+        self.validate_username_complexity(self.username)
 
         validate_email(self.email)
 
