@@ -86,6 +86,18 @@ class CustomerUser(AbstractUser):
         if not self.username:
             raise ValidationError("Name cannot be empty.")
 
+        if not self.email:
+            raise ValidationError('Email cannot be empty.')
+
+        if not self.password:
+            raise ValidationError('Password cannot be empty.')
+
+        if not self.first_name:
+            raise ValidationError('First name cannot be empty.')
+
+        if not self.last_name:
+            raise ValidationError('Last name cannot be empty.')
+
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
