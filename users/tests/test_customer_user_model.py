@@ -21,6 +21,7 @@ Example:
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from users.models import CustomerUser
 
 
@@ -164,7 +165,7 @@ class TestCustomerUserModel():
     @pytest.mark.django_db
     def test_uniqueness_username(self):
         """Test that CustomerUser username is unique"""
-        with pytest.raises(ValidationError):
+        with pytest.raises(IntegrityError):
             CustomerUser.objects.create(
                 username='Duplicate',
                 email='test@example.com',
@@ -183,7 +184,7 @@ class TestCustomerUserModel():
     @pytest.mark.django_db
     def test_uniqueness_email(self):
         """Test that CustomerUser email is unique"""
-        with pytest.raises(ValidationError):
+        with pytest.raises(IntegrityError):
             CustomerUser.objects.create(
                 username='Testuser',
                 email='test@example.com',
