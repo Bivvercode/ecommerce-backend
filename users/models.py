@@ -27,9 +27,9 @@ Example:
 import string
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
+from django.core.validators import (RegexValidator, EmailValidator,
+                                    validate_email)
 from django.core.exceptions import ValidationError
-from django.core.validators import EmailValidator
 from django.utils.translation import gettext_lazy as _
 
 
@@ -122,6 +122,8 @@ class CustomerUser(AbstractUser):
             raise ValidationError('Last name cannot be empty.')
 
         self.validate_password_complexity(self.password)
+
+        validate_email(self.email)
 
     def save(self, *args, **kwargs):
         self.clean()
