@@ -28,6 +28,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
+from django.core.validators import EmailValidator
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomerUser(AbstractUser):
@@ -37,6 +39,13 @@ class CustomerUser(AbstractUser):
     additional fields for user profile management, including date of birth,
     phone number, shipping address and billing address.
     """
+    email = models.EmailField(
+        _("email address"),
+        unique=True,
+        validators=[
+            EmailValidator(message='Please enter a valid email address.')
+        ]
+    )
     date_of_birth = models.DateField(blank=True, null=True)
     phone_number = models.CharField(
         max_length=20,
