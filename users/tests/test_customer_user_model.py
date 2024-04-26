@@ -37,7 +37,7 @@ class TestCustomerUserModel():
             email='test@example.com',
             first_name='Test',
             last_name='User',
-            password='Password123'
+            password='Password123!'
         )
 
         # Assert that the string representation matches the expected format
@@ -52,7 +52,7 @@ class TestCustomerUserModel():
                 email='test@example.com',
                 first_name='Test',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
@@ -63,7 +63,7 @@ class TestCustomerUserModel():
                 username='testuser',
                 first_name='Test',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
@@ -85,7 +85,7 @@ class TestCustomerUserModel():
                 username='testuser',
                 email='test@example.com',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
@@ -96,7 +96,7 @@ class TestCustomerUserModel():
                 username='testuser',
                 email='test@example.com',
                 first_name='Test',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
@@ -108,7 +108,7 @@ class TestCustomerUserModel():
                 email='test.example.com',
                 first_name='Test',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
@@ -120,7 +120,7 @@ class TestCustomerUserModel():
                 email='test@example.com',
                 first_name='Test',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
@@ -132,7 +132,7 @@ class TestCustomerUserModel():
                 email='test@example.com',
                 first_name='Test',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
@@ -159,7 +159,7 @@ class TestCustomerUserModel():
                 first_name='Test',
                 last_name='User',
                 phone_number='+46700112233445566721',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
@@ -171,14 +171,14 @@ class TestCustomerUserModel():
                 email='test@example.com',
                 first_name='Test',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
             CustomerUser.objects.create(
                 username='Duplicate',
                 email='test2@example.com',
                 first_name='Test',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
@@ -190,14 +190,14 @@ class TestCustomerUserModel():
                 email='test@example.com',
                 first_name='Test',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
             CustomerUser.objects.create(
                 username='Testuser123',
                 email='test@example.com',
                 first_name='Test',
                 last_name='User',
-                password='Password123'
+                password='Password123!'
             )
 
     @pytest.mark.django_db
