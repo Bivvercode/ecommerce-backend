@@ -179,3 +179,22 @@ class TestCustomerUserModel():
                 last_name='User',
                 password='Password123'
             )
+
+    @pytest.mark.django_db
+    def test_uniqueness_email(self):
+        """Test that CustomerUser email is unique"""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='Testuser',
+                email='test@example.com',
+                first_name='Test',
+                last_name='User',
+                password='Password123'
+            )
+            CustomerUser.objects.create(
+                username='Testuser123',
+                email='test@example.com',
+                first_name='Test',
+                last_name='User',
+                password='Password123'
+            )
