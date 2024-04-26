@@ -223,3 +223,15 @@ class TestCustomerUserModel():
                 last_name='User',
                 password='PASSWORD1!'
             )
+
+    @pytest.mark.django_db
+    def test_password_requires_number(self):
+        """Test the password requires number"""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='TestUser',
+                email='test@example.com',
+                first_name='Test',
+                last_name='User',
+                password='Password!'
+            )
