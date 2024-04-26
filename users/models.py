@@ -83,6 +83,11 @@ class CustomerUser(AbstractUser):
 
     def validate_password_complexity(self, value: str):
         """Validate password complexity."""
+        if len(value) < 8:
+            raise ValidationError(
+                'Password needs to be at least 8 chatacters long.'
+            )
+
         if not any(char.isupper() for char in value):
             raise ValidationError(
                 'Password must contain at least one uppercase letter.'
