@@ -120,6 +120,13 @@ class CustomerUser(AbstractUser):
                 'Username cannot be more than 20 characters long.'
             )
 
+    def validate_phone_number_complexity(self, value: str):
+        """Validate phone number complexity."""
+        if len(value) > 20:
+            raise ValidationError(
+                'Phone number cannot be more than 20 characters long.'
+            )
+
     def clean(self):
         super().clean()
 
@@ -140,6 +147,7 @@ class CustomerUser(AbstractUser):
 
         self.validate_password_complexity(self.password)
         self.validate_username_complexity(self.username)
+        self.validate_phone_number_complexity(self.phone_number)
 
         validate_email(self.email)
 
