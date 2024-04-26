@@ -199,3 +199,15 @@ class TestCustomerUserModel():
                 last_name='User',
                 password='Password123'
             )
+
+    @pytest.mark.django_db
+    def test_password_requires_uppercase(self):
+        """Test the password requires uppercase"""
+        with pytest.raises(ValidationError):
+            CustomerUser.objects.create(
+                username='TestUser',
+                email='test@example.com',
+                first_name='Test',
+                last_name='User',
+                password='password1!'
+            )
