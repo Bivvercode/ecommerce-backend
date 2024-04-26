@@ -24,6 +24,7 @@ Example:
     user = CustomerUser.objects.create(username='john_doe',
                                         email='john@example.com')
 """
+import string
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
@@ -80,6 +81,28 @@ class CustomerUser(AbstractUser):
         help_text='Specific permissions for this user.'
     )
 
+    def validate_password_complexity(self, value: str):
+        """Validate password complexity."""
+        if not any(char.isupper() for char in value):
+            raise ValidationError(
+                'Password must contain at least one uppercase letter.'
+            )
+
+        if not any(char.islower() for char in value):
+            raise ValidationError(
+                'Password must contain at least one lowercase letter.'
+            )
+
+        if not any(char.isdigit() for char in value):
+            raise ValidationError(
+                'Password must contain at least one digit.'
+            )
+
+        if not any(char in string.punctuation for char in value):
+            raise ValidationError(
+                'Password must contain at least one symbol.'
+            )
+
     def clean(self):
         super().clean()
 
@@ -97,6 +120,8 @@ class CustomerUser(AbstractUser):
 
         if not self.last_name:
             raise ValidationError('Last name cannot be empty.')
+
+        self.validate_password_complexity(self.password)
 
     def save(self, *args, **kwargs):
         self.clean()
