@@ -14,7 +14,7 @@ class TestRegisterView:
         url = reverse('register')
         data = {
             'username': 'testuser',
-            'password': 'testpassword123!',
+            'password': 'Testpassword1!',
             'email': 'test@email.com',
             'first_name': 'Test',
             'last_name': 'User'

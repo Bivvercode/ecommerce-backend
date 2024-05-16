@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from .models import CustomerUser
 
 
@@ -11,6 +12,10 @@ class CustomerUserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         password = validated_data.pop('password')
         user = CustomerUser(**validated_data)
-        user.set_password(password)
+        if password:
+            validate_password(password, user)
+            user.set_password(password)
+        else:
+            raise serializers.ValidationError("Password field is required")
         user.save()
         return user
