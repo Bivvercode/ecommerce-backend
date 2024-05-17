@@ -89,6 +89,22 @@ class TestRegisterView:
         assert not CustomerUser.objects.filter(username='testuser').exists()
 
     @pytest.mark.django_db
+    def test_register_user_no_last_name(self):
+        """Test registering a new user without a last name."""
+        client = APIClient()
+        url = reverse('register')
+        data = {
+            'username': 'testuser',
+            'password': 'StrongPassword123!',
+            'email': 'test@email.com',
+            'first_name': 'Test'
+        }
+        response = client.post(url, data, format='json')
+        assert response.status_code == 400
+        assert 'last_name' in response.data
+        assert not CustomerUser.objects.filter(username='testuser').exists()
+
+    @pytest.mark.django_db
     def test_register_user_duplicate_username(self):
         """Test registering a new user with a duplicate username."""
         CustomerUser.objects.create(
