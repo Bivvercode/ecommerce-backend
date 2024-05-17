@@ -1,5 +1,7 @@
-from rest_framework import generics, permissions
+from django.contrib.auth import authenticate
+from rest_framework import generics, permissions, status, views
 from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
 from users.models import CustomerUser
 from users.serializers import CustomerUserSerializer
 
@@ -24,3 +26,19 @@ class RegisterView(generics.CreateAPIView):
             'token': self.token,
         }
         return response
+
+
+class LoginView(views.APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({"token": token.key})
+        return Response({"error": "Wrong Credentials"},
+                        status=status.HTTP_400_BAD_REQUEST)
