@@ -87,3 +87,57 @@ class TestRegisterView:
         assert response.status_code == 400
         assert 'first_name' in response.data
         assert not CustomerUser.objects.filter(username='testuser').exists()
+
+    @pytest.mark.django_db
+    def test_register_user_duplicate_username(self):
+        """Test registering a new user with a duplicate username."""
+        CustomerUser.objects.create(
+            username='testuser',
+            password='StrongPassword123!',
+            email='test@email.com',
+            first_name='Test',
+            last_name='User'
+        )
+
+        client = APIClient()
+        url = reverse('register')
+        data = {
+            'username': 'testuser',
+            'password': 'StrongPassword123!',
+            'email': 'anotheremail@test.com',
+            'first_name': 'Another',
+            'last_name': 'User'
+        }
+        response = client.post(url, data, format='json')
+        assert response.status_code == 400
+        assert 'username' in response.data
+        assert not CustomerUser.objects.filter(
+            email='anotheremail@test.com'
+        ).exists()
+
+    @pytest.mark.django_db
+    def test_register_user_duplicate_email(self):
+        """Test registering a new user with a duplicate email."""
+        CustomerUser.objects.create(
+            username='testuser',
+            password='StrongPassword123!',
+            email='test@email.com',
+            first_name='Test',
+            last_name='User'
+        )
+
+        client = APIClient()
+        url = reverse('register')
+        data = {
+            'username': 'anotheruser',
+            'password': 'StrongPassword123!',
+            'email': 'test@email.com',
+            'first_name': 'Another',
+            'last_name': 'User'
+        }
+        response = client.post(url, data, format='json')
+        assert response.status_code == 400
+        assert 'email' in response.data
+        assert not CustomerUser.objects.filter(
+            username='anotheruser'
+        ).exists()
