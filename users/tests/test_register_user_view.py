@@ -179,3 +179,24 @@ class TestRegisterView:
         assert not CustomerUser.objects.filter(
             username='testuser'
         ).exists()
+
+    @pytest.mark.django_db
+    def test_register_user_no_number_password(self):
+        """
+        Test registering a new user with a password not containing number.
+        """
+        client = APIClient()
+        url = reverse('register')
+        data = {
+            'username': 'testuser',
+            'password': 'Weakpassword!',
+            'email': 'test@gmail.com',
+            'first_name': 'Test',
+            'last_name': 'User'
+        }
+        response = client.post(url, data, format='json')
+        assert response.status_code == 400
+        assert 'password' in response.data
+        assert not CustomerUser.objects.filter(
+            username='testuser'
+        ).exists()
