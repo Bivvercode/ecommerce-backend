@@ -2,6 +2,7 @@
 import pytest
 from rest_framework.test import APIClient
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import ErrorDetail, ValidationError
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
@@ -91,3 +92,69 @@ class TestProfileView:
         }
         response = client.put(url, data, format='json')
         assert response.status_code == 401
+
+    @pytest.mark.usefixtures('create_user')
+    @pytest.mark.django_db
+    def test_update_profile_with_empty_first_name(self):
+        """Test updating the profile with empty first name."""
+        client = APIClient()
+        token, _ = Token.objects.get_or_create(user=self.user)
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        url = reverse('profile')
+        data = {
+            'first_name': '',
+            'last_name': 'User',
+            'email': 'user@gmail.com',
+            'phone_number': '1234567890',
+            'shipping_address': 'Shipping Address',
+            'billing_address': 'Billing Address'
+        }
+        response = client.put(url, data, format='json')
+        assert response.status_code == 400
+        assert response.data['detail'] == "['First name cannot be empty.']"
+
+    @pytest.mark.usefixtures('create_user')
+    @pytest.mark.django_db
+    def test_update_profile_with_invalid_email(self):
+        """Test updating the profile with invalid email."""
+        client = APIClient()
+        token, _ = Token.objects.get_or_create(user=self.user)
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        url = reverse('profile')
+        data = {
+            'first_name': 'User',
+            'last_name': 'User',
+            'email': 'invalidemail',
+            'phone_number': '1234567890',
+            'shipping_address': 'Shipping Address',
+            'billing_address': 'Billing Address'
+        }
+        response = client.put(url, data, format='json')
+        assert response.status_code == 400
+        assert str(response.data['email'][0]) == str(
+            ErrorDetail(string='Please enter a valid email address.',
+                        code='invalid')
+        )
+
+    @pytest.mark.usefixtures('create_user')
+    @pytest.mark.django_db
+    def test_update_profile_with_invalid_phone_number(self):
+        """Test updating the profile with invalid phone number."""
+        client = APIClient()
+        token, _ = Token.objects.get_or_create(user=self.user)
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        url = reverse('profile')
+        data = {
+            'first_name': 'User',
+            'last_name': 'User',
+            'email': 'user@gmail.com',
+            'phone_number': 'invalidphone',
+            'shipping_address': 'Shipping Address',
+            'billing_address': 'Billing Address'
+        }
+        response = client.put(url, data, format='json')
+        assert response.status_code == 400
+        assert 'phone_number' in response.data
+        assert (response.data['phone_number'] ==
+                [('Phone number can only contain digits '
+                  '(0-9) and symbols (*+#-).')])

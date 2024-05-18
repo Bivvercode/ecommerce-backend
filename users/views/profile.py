@@ -1,5 +1,7 @@
 from rest_framework import views, permissions, status
 from rest_framework.response import Response
+from django.core.exceptions import ValidationError
+from users.serializers import CustomerUserSerializer
 from users.models import CustomerUser
 
 
@@ -23,18 +25,19 @@ class ProfileView(views.APIView):
 
     def put(self, request):
         user: CustomerUser = request.user
-        data = request.data
+        serializer = CustomerUserSerializer(
+            user,
+            data=request.data,
+            partial=True
+        )
 
-        user.first_name = data.get('first_name', user.first_name)
-        user.last_name = data.get('last_name', user.last_name)
-        user.email = data.get('email', user.email)
-        user.phone_number = data.get('phone_number', user.phone_number)
-        user.shipping_address = data.get('shipping_address',
-                                         user.shipping_address)
-        user.billing_address = data.get('billing_address',
-                                        user.billing_address)
+        try:
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"detail": "Profile updated"},
+                                status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({'detail': str(e)},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        user.save()
-
-        return Response({"detail": "Profile updated"},
-                        status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
