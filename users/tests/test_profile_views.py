@@ -42,6 +42,15 @@ class TestProfileView:
 
     @pytest.mark.usefixtures('create_user')
     @pytest.mark.django_db
+    def test_get_profile_without_token(self):
+        """Test getting the profile without token."""
+        client = APIClient()
+        url = reverse('profile')
+        response = client.get(url)
+        assert response.status_code == 401
+
+    @pytest.mark.usefixtures('create_user')
+    @pytest.mark.django_db
     def test_update_profile(self):
         """Test updating the profile."""
         client = APIClient()
