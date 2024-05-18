@@ -67,3 +67,11 @@ class LoginView(views.APIView):
             return Response({"token": token.key})
         return Response({"error": "Wrong Credentials"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        request.user.auth_token.delete()
+        return Response(status=status.HTTP_200_OK)
