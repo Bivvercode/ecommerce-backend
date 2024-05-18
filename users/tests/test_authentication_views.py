@@ -70,6 +70,16 @@ class TestAuthenticationView:
 
     @pytest.mark.usefixtures('create_user')
     @pytest.mark.django_db
+    def test_login_with_nonexistent_user(self):
+        """Test logging in with a nonexistent user."""
+        client = APIClient()
+        url = reverse('login')
+        data = {'username': 'nonexistent', 'password': 'testpass123!'}
+        response = client.post(url, data, format='json')
+        assert response.status_code == 400
+
+    @pytest.mark.usefixtures('create_user')
+    @pytest.mark.django_db
     def test_logout(self):
         """Test logging out."""
         client = APIClient()
