@@ -74,3 +74,20 @@ class TestProfileView:
         assert self.user.phone_number == '0987654321'
         assert self.user.shipping_address == 'Updated Shipping Address'
         assert self.user.billing_address == 'Updated Billing Address'
+
+    @pytest.mark.usefixtures('create_user')
+    @pytest.mark.django_db
+    def test_update_profile_without_token(self):
+        """Test updating the profile without token."""
+        client = APIClient()
+        url = reverse('profile')
+        data = {
+            'first_name': 'Updated',
+            'last_name': 'User',
+            'email': 'updated@gmail.com',
+            'phone_number': '0987654321',
+            'shipping_address': 'Updated Shipping Address',
+            'billing_address': 'Updated Billing Address'
+        }
+        response = client.put(url, data, format='json')
+        assert response.status_code == 401
