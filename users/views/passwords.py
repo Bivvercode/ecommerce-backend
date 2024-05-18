@@ -1,3 +1,5 @@
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework import views, permissions, status
 from rest_framework.response import Response
 
@@ -18,6 +20,12 @@ class ChangePasswordView(views.APIView):
 
         if not user.check_password(old_password):
             return Response({"old_password": ["Wrong password."]},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            validate_password(new_password, user)
+        except ValidationError as e:
+            return Response({"new_password": list(e.messages)},
                             status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(new_password)
