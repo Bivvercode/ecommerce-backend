@@ -41,6 +41,15 @@ class TestAuthenticationView:
 
     @pytest.mark.usefixtures('create_user')
     @pytest.mark.django_db
+    def test_login_without_credentials(self):
+        """Test logging in without credentials."""
+        client = APIClient()
+        url = reverse('login')
+        response = client.post(url)
+        assert response.status_code == 400
+
+    @pytest.mark.usefixtures('create_user')
+    @pytest.mark.django_db
     def test_logout(self):
         """Test logging out."""
         client = APIClient()
