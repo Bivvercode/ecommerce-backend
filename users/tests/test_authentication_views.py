@@ -88,3 +88,12 @@ class TestAuthenticationView:
         url = reverse('logout')
         response = client.post(url)
         assert response.status_code == 200
+
+    @pytest.mark.usefixtures('create_user')
+    @pytest.mark.django_db
+    def test_logout_without_token(self):
+        """Test logging out without token."""
+        client = APIClient()
+        url = reverse('logout')
+        response = client.post(url)
+        assert response.status_code == 401
