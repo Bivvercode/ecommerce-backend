@@ -7,8 +7,18 @@ class ProfileView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        # Implement profile retrieval logic here
-        pass
+        user: CustomerUser = request.user
+
+        data = {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'phone_number': user.phone_number,
+            'shipping_address': user.shipping_address,
+            'billing_address': user.billing_address,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
 
     def put(self, request):
         user: CustomerUser = request.user
