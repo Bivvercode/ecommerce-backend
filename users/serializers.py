@@ -34,7 +34,9 @@ class CustomerUserSerializer(serializers.ModelSerializer):
             required_fields.extend(['username', 'password'])
         for field in required_fields:
             if field not in attrs:
-                raise serializers.ValidationError({field: f'{field} field is required.'})
+                raise serializers.ValidationError(
+                    {field: f'{field} field is required.'}
+                )
         password = attrs.get('password')
         if password or self.instance is None:
             user = CustomerUser(**attrs)
