@@ -10,6 +10,7 @@ class ProfileView(views.APIView):
         user: CustomerUser = request.user
 
         data = {
+            'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
