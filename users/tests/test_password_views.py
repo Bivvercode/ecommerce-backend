@@ -77,3 +77,15 @@ class TestChangePasswordView:
         data = {'new_password': 'New_password1'}
         response = client.post(url, data, format='json')
         assert response.status_code == 400
+
+    @pytest.mark.usefixtures('create_user')
+    @pytest.mark.django_db
+    def test_change_password_without_new_password(self):
+        """Test changing the password without new password."""
+        client = APIClient()
+        token, _ = Token.objects.get_or_create(user=self.user)
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        url = reverse('change_password')
+        data = {'old_password': 'Old_password1'}
+        response = client.post(url, data, format='json')
+        assert response.status_code == 400
