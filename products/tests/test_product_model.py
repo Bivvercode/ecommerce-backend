@@ -118,3 +118,17 @@ class TestProductModel:
                 quantity_per_unit=1.00,
                 currency='USD'
             )
+
+    @pytest.mark.django_db
+    def test_product_discount_cannot_exceed_100(self, setup_data):
+        unit, _ = setup_data
+        with pytest.raises(ValidationError):
+            Product.objects.create(
+                name='Test Product',
+                description='This is a test product',
+                price=100.00,
+                discount=101,
+                unit=unit,
+                quantity_per_unit=1.00,
+                currency='USD'
+            )
