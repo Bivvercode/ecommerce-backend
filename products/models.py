@@ -1,11 +1,28 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import (MaxValueValidator, MinValueValidator)
+from django.core.exceptions import ValidationError
 
 
 class Unit(models.Model):
     name = models.CharField(max_length=200)
     symbol = models.CharField(max_length=9)
+
+    def clean(self):
+        super().clean()
+
+        if not self.name:
+            raise ValidationError("Name cannot be empty.")
+        if len(self.name) > 200:
+            raise ValidationError("Name cannot exceed 200 characters.")
+        if not self.symbol:
+            raise ValidationError("Symbol cannot be empty.")
+        if len(self.symbol) > 9:
+            raise ValidationError("Symbol cannot exceed 9 characters.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class Category(models.Model):
