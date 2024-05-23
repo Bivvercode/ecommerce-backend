@@ -30,6 +30,18 @@ class Category(models.Model):
     parent = models.ForeignKey('self', on_delete=models.SET_NULL,
                                null=True, blank=True)
 
+    def clean(self):
+        super().clean()
+
+        if not self.name:
+            raise ValidationError("Name cannot be empty.")
+        if len(self.name) > 200:
+            raise ValidationError("Name cannot exceed 200 characters.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
