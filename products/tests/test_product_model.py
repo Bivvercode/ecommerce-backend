@@ -1,5 +1,5 @@
 import pytest
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from products.models import Product, Unit, Category
 
 
@@ -129,6 +129,19 @@ class TestProductModel:
                 price=100.00,
                 discount=101,
                 unit=unit,
+                quantity_per_unit=1.00,
+                currency='USD'
+            )
+
+    @pytest.mark.django_db
+    def test_product_unit_is_required(self, setup_data):
+        _, _ = setup_data
+        with pytest.raises(ObjectDoesNotExist):
+            Product.objects.create(
+                name='Test Product',
+                description='This is a test product',
+                price=100.00,
+                discount=10,
                 quantity_per_unit=1.00,
                 currency='USD'
             )
