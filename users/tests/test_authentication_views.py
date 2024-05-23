@@ -12,7 +12,7 @@ class TestAuthenticationView:
     def create_user(self):
         self.user = get_user_model().objects.create_user(
             username='testuser',
-            password='testpass123!',
+            password='Testpass123!',
             email='test@gmail.com',
             first_name='Test',
             last_name='User'
@@ -24,7 +24,7 @@ class TestAuthenticationView:
         """Test logging in with valid credentials."""
         client = APIClient()
         url = reverse('login')
-        data = {'username': 'testuser', 'password': 'testpass123!'}
+        data = {'username': 'testuser', 'password': 'Testpass123!'}
         response = client.post(url, data, format='json')
         assert response.status_code == 200
         assert 'token' in response.data
@@ -54,7 +54,7 @@ class TestAuthenticationView:
         """Test logging in without username."""
         client = APIClient()
         url = reverse('login')
-        data = {'password': 'testpass123!'}
+        data = {'password': 'Testpass123!'}
         response = client.post(url, data, format='json')
         assert response.status_code == 400
 
@@ -74,7 +74,7 @@ class TestAuthenticationView:
         """Test logging in with a nonexistent user."""
         client = APIClient()
         url = reverse('login')
-        data = {'username': 'nonexistent', 'password': 'testpass123!'}
+        data = {'username': 'nonexistent', 'password': 'Testpass123!'}
         response = client.post(url, data, format='json')
         assert response.status_code == 400
 
