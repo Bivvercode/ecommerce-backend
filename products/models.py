@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import (MaxValueValidator, MinValueValidator)
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    validate_slug)
 from django.core.exceptions import ValidationError
 
 
@@ -55,6 +56,38 @@ class Product(models.Model):
     quantity_per_unit = models.DecimalField(max_digits=5, decimal_places=2)
     currency = models.CharField(max_length=3)
     categories = models.ManyToManyField(Category, through='ProductCategory')
+
+    def clean(self):
+        super().clean()
+
+        if not self.name:
+            raise ValidationError("Name cannot be empty.")
+        if len(self.name) > 200:
+            raise ValidationError("Name cannot exceed 200 characters.")
+        if not self.description:
+            raise ValidationError("Description cannot be empty.")
+        if not self.price or self.price <= 0:
+            raise ValidationError("Price must be greater than 0.")
+        if not self.unit:
+            raise ValidationError("Unit cannot be empty.")
+        if not self.quantity_per_unit or self.quantity_per_unit <= 0:
+            raise ValidationError("Quantity per unit must be greater than 0.")
+        if not self.currency:
+            raise ValidationError("Currency cannot be empty.")
+        if len(self.currency) > 3:
+            raise ValidationError("Currency cannot exceed 3 characters.")
+        try:
+            validate_slug(self.currency)
+        except ValidationError as exc:
+            raise ValidationError(
+                "Currency must be a valid ISO 4217 code."
+            ) from exc
+        if self.discount < 0 or self.discount > 100:
+            raise ValidationError("Discount must be between 0 and 100.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class ProductCategory(models.Model):
