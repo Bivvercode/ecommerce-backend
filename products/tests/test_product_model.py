@@ -7,10 +7,24 @@ class TestProductModel:
     """Test cases for the Product model."""
 
     @pytest.fixture
-    def setup_data(self):
-        unit = Unit.objects.create(name='Kilogram', symbol='kg')
-        category = Category.objects.create(name='Electronics')
-        return unit, category
+    def unit(self):
+        return Unit.objects.create(name='Kilogram', symbol='kg')
+
+    @pytest.fixture
+    def category(self):
+        return Category.objects.create(name='Electronics')
+
+    @pytest.fixture
+    def product_data(self, unit):
+        return {
+            'name': 'Test Product',
+            'description': 'This is a test product',
+            'price': 100.00,
+            'discount': 10,
+            'unit': unit,
+            'quantity_per_unit': 1.00,
+            'currency': 'USD'
+        }
 
     @pytest.mark.django_db
     def test_create_product(self, setup_data):
