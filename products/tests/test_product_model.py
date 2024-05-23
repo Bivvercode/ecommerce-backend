@@ -27,67 +27,36 @@ class TestProductModel:
         }
 
     @pytest.mark.django_db
-    def test_create_product(self, setup_data):
-        unit, category = setup_data
-        product = Product.objects.create(
-            name='Test Product',
-            description='This is a test product',
-            price=100.00,
-            discount=10,
-            unit=unit,
-            quantity_per_unit=1.00,
-            currency='USD'
-        )
+    def test_create_product(self, product_data, category):
+        product = Product.objects.create(**product_data)
         product.categories.add(category)
         assert Product.objects.count() == 1
         assert product.name == 'Test Product'
         assert product.description == 'This is a test product'
         assert product.price == 100.00
         assert product.discount == 10
-        assert product.unit == unit
+        assert product.unit == product_data['unit']
         assert product.quantity_per_unit == 1.00
         assert product.currency == 'USD'
         assert product.categories.count() == 1
 
     @pytest.mark.django_db
-    def test_product_name_cannot_be_empty(self, setup_data):
-        unit, _ = setup_data
+    def test_product_name_cannot_be_empty(self, product_data):
+        product_data['name'] = ''
         with pytest.raises(ValidationError):
-            Product.objects.create(
-                name='',
-                description='This is a test product',
-                price=100.00,
-                discount=10,
-                unit=unit,
-                quantity_per_unit=1.00,
-                currency='USD'
-            )
+            Product.objects.create(**product_data)
 
     @pytest.mark.django_db
-    def test_product_name_cannot_exceed_200_characters(self, setup_data):
-        unit, _ = setup_data
-        with pytest.raises(ValidationError):
-            Product.objects.create(
-                name='a' * 201,
-                description='This is a test product',
-                price=100.00,
-                discount=10,
-                unit=unit,
-                quantity_per_unit=1.00,
-                currency='USD'
-            )
+    def test_product_name_cannot_exceed_200_characters(self, product_data):
+        product_data['name'] = 'a' * 201
 
+        with pytest.raises(ValidationError):
+            Product.objects.create(**product_data)
         assert Product.objects.count() == 0
 
-        Product.objects.create(
-            name='a' * 200,
-            description='This is a test product',
-            price=100.00,
-            discount=10,
-            unit=unit,
-            quantity_per_unit=1.00,
-            currency='USD'
-        )
+        product_data['name'] = 'a' * 200
+
+        Product.objects.create(**product_data)
 
         assert Product.objects.count() == 1
 
