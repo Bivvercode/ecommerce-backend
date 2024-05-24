@@ -54,3 +54,10 @@ class TestProductCategoryModel:
         assert ProductCategory.objects.count() == 1
         product.delete()
         assert ProductCategory.objects.count() == 0
+
+    @pytest.mark.django_db
+    def test_category_delete_cascades(self, product, category):
+        ProductCategory.objects.create(product=product, category=category)
+        assert ProductCategory.objects.count() == 1
+        category.delete()
+        assert ProductCategory.objects.count() == 0
