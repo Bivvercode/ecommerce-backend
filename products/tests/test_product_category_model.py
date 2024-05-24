@@ -72,3 +72,31 @@ class TestProductCategoryModel:
         category3 = Category.objects.create(name='Footwear')
         ProductCategory.objects.create(product=product, category=category3)
         assert ProductCategory.objects.count() == 3
+        assert product.categories.count() == 3
+
+    @pytest.mark.django_db
+    def test_multiple_products_for_category(self, product, category):
+        ProductCategory.objects.create(product=product, category=category)
+        assert ProductCategory.objects.count() == 1
+        product2 = Product.objects.create(
+            name='Test Product 2',
+            description='This is a test product',
+            price=100.00,
+            discount=10,
+            unit=product.unit,
+            quantity_per_unit=1.00,
+            currency='USD'
+        )
+        ProductCategory.objects.create(product=product2, category=category)
+        assert ProductCategory.objects.count() == 2
+        product3 = Product.objects.create(
+            name='Test Product 3',
+            description='This is a test product',
+            price=100.00,
+            discount=10,
+            unit=product.unit,
+            quantity_per_unit=1.00,
+            currency='USD'
+        )
+        ProductCategory.objects.create(product=product3, category=category)
+        assert ProductCategory.objects.count() == 3
