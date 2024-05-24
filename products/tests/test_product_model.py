@@ -55,9 +55,7 @@ class TestProductModel:
         assert Product.objects.count() == 0
 
         product_data['name'] = 'a' * 200
-
         Product.objects.create(**product_data)
-
         assert Product.objects.count() == 1
 
     @pytest.mark.django_db
@@ -68,24 +66,19 @@ class TestProductModel:
         assert Product.objects.count() == 0
 
         product_data['description'] = 'This is a test product'
-
         Product.objects.create(**product_data)
-
         assert Product.objects.count() == 1
 
     @pytest.mark.django_db
-    def test_product_price_cannot_be_negative(self, setup_data):
-        unit, _ = setup_data
+    def test_product_price_cannot_be_negative(self, product_data):
+        product_data['price'] = -100.00
         with pytest.raises(ValidationError):
-            Product.objects.create(
-                name='Test Product',
-                description='This is a test product',
-                price=-100.00,
-                discount=10,
-                unit=unit,
-                quantity_per_unit=1.00,
-                currency='USD'
-            )
+            Product.objects.create(**product_data)
+        assert Product.objects.count() == 0
+
+        product_data['price'] = 100.00
+        Product.objects.create(**product_data)
+        assert Product.objects.count() == 1
 
     @pytest.mark.django_db
     def test_product_discount_cannot_be_negative(self, setup_data):
