@@ -159,3 +159,11 @@ class TestProductModel:
         product.categories.add(category)
         assert product.categories.count() == 1
         assert Product.objects.count() == 1
+
+    @pytest.mark.django_db
+    def test_product_categories_are_unique(self, product_data, category):
+        product = Product.objects.create(**product_data)
+        product.categories.add(category)
+        product.categories.add(category)
+        assert product.categories.count() == 1
+        assert Product.objects.count() == 1
