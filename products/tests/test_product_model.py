@@ -184,3 +184,9 @@ class TestProductModel:
         product.categories.add(category, category2)
         assert product.categories.count() == 2
         assert Product.objects.count() == 1
+
+    @pytest.mark.django_db
+    def test_product_str_representation(self, product_data, category):
+        product = Product.objects.create(**product_data)
+        product.categories.add(category)
+        assert str(product) == 'Test Product'

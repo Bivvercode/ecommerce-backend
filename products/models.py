@@ -89,6 +89,9 @@ class Product(models.Model):
         self.clean()
         super().save(*args, **kwargs)
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class ProductCategory(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
