@@ -154,17 +154,8 @@ class TestProductModel:
         assert Product.objects.count() == 1
 
     @pytest.mark.django_db
-    def test_product_categories_are_saved(self, setup_data):
-        unit, category = setup_data
-        product = Product.objects.create(
-            name='Test Product',
-            description='This is a test product',
-            price=100.00,
-            discount=10,
-            unit=unit,
-            quantity_per_unit=1.00,
-            currency='USD'
-        )
+    def test_product_categories_are_saved(self, product_data, category):
+        product = Product.objects.create(**product_data)
         product.categories.add(category)
         assert product.categories.count() == 1
         assert Product.objects.count() == 1
