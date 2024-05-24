@@ -40,3 +40,10 @@ class TestProductCategoryModel:
             with transaction.atomic():
                 ProductCategory.objects.create(category=category)
         assert ProductCategory.objects.count() == 0
+
+    @pytest.mark.django_db
+    def test_product_category_category_is_required(self, product):
+        with pytest.raises(IntegrityError):
+            with transaction.atomic():
+                ProductCategory.objects.create(product=product)
+        assert ProductCategory.objects.count() == 0
