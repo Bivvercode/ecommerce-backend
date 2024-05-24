@@ -25,6 +25,9 @@ class Unit(models.Model):
         self.clean()
         super().save(*args, **kwargs)
 
+    def __str__(self) -> str:
+        return str(self.name)
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -42,6 +45,9 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return str(self.name)
 
 
 class Product(models.Model):
@@ -90,7 +96,7 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
 
 class ProductCategory(models.Model):
