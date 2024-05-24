@@ -1,4 +1,5 @@
 import pytest
+from django.db import IntegrityError, transaction
 from products.models import ProductCategory, Category, Product, Unit
 
 
@@ -32,3 +33,10 @@ class TestProductCategoryModel:
         assert ProductCategory.objects.count() == 1
         assert product_category.product == product
         assert product_category.category == category
+
+    @pytest.mark.django_db
+    def test_product_category_product_is_required(self, category):
+        with pytest.raises(IntegrityError):
+            with transaction.atomic():
+                ProductCategory.objects.create(category=category)
+        assert ProductCategory.objects.count() == 0
