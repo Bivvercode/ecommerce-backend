@@ -103,17 +103,16 @@ class TestProductModel:
         assert Product.objects.count() == 1
 
     @pytest.mark.django_db
-    def test_product_unit_is_required(self, setup_data):
-        _, _ = setup_data
+    def test_product_unit_is_required(self, product_data):
+        product_data.pop('unit')
         with pytest.raises(ObjectDoesNotExist):
-            Product.objects.create(
-                name='Test Product',
-                description='This is a test product',
-                price=100.00,
-                discount=10,
-                quantity_per_unit=1.00,
-                currency='USD'
-            )
+            Product.objects.create(**product_data)
+        assert Product.objects.count() == 0
+
+        product_data['unit'] = Unit.objects.create(name='Kilogram',
+                                                   symbol='kg')
+        Product.objects.create(**product_data)
+        assert Product.objects.count() == 1
 
     @pytest.mark.django_db
     def test_product_quantity_per_unit_cannot_be_negative(self, setup_data):
