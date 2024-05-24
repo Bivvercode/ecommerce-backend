@@ -61,3 +61,14 @@ class TestProductCategoryModel:
         assert ProductCategory.objects.count() == 1
         category.delete()
         assert ProductCategory.objects.count() == 0
+
+    @pytest.mark.django_db
+    def test_multiple_categories_for_product(self, product, category):
+        ProductCategory.objects.create(product=product, category=category)
+        assert ProductCategory.objects.count() == 1
+        category2 = Category.objects.create(name='Clothing')
+        ProductCategory.objects.create(product=product, category=category2)
+        assert ProductCategory.objects.count() == 2
+        category3 = Category.objects.create(name='Footwear')
+        ProductCategory.objects.create(product=product, category=category3)
+        assert ProductCategory.objects.count() == 3
