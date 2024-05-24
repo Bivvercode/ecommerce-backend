@@ -176,3 +176,11 @@ class TestProductModel:
         product.categories.remove(category)
         assert product.categories.count() == 0
         assert Product.objects.count() == 1
+
+    @pytest.mark.django_db
+    def test_product_in_multiple_categories(self, product_data, category):
+        product = Product.objects.create(**product_data)
+        category2 = Category.objects.create(name='Clothing')
+        product.categories.add(category, category2)
+        assert product.categories.count() == 2
+        assert Product.objects.count() == 1
