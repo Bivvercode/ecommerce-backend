@@ -108,6 +108,21 @@ class Image(models.Model):
     image_file = models.ImageField(upload_to='product_images/')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
+    def clean(self):
+        super().clean()
+
+        if not self.image_file:
+            raise ValidationError("Image file cannot be empty.")
+        if not self.product:
+            raise ValidationError("Product cannot be empty.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return f'{self.product.name} Image'
+
 
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,

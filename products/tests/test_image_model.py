@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from products.models import Image, Product, Unit, Category, ProductCategory
 
 
@@ -65,3 +66,8 @@ class TestImageModel:
         assert Image.objects.count() == 1
         product.delete()
         assert Image.objects.count() == 0
+
+    @pytest.mark.django_db
+    def test_image_model_validation(self, product):
+        with pytest.raises(ValidationError):
+            Image.objects.create(image_file=None, product=product)
