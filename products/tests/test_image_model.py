@@ -42,9 +42,11 @@ class TestImageModel:
 
         yield uploaded_file
 
-        os.remove(os.path.join(settings.MEDIA_ROOT,
-                               'product_images',
-                               uploaded_file.name))
+        file_path = os.path.join(settings.MEDIA_ROOT,
+                                 'product_images',
+                                 uploaded_file.name)
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
     @pytest.mark.django_db
     def test_create_image(self, product, image_file):
