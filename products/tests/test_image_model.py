@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from products.models import Image, Product, Unit, Category, ProductCategory
 
 
@@ -71,3 +71,8 @@ class TestImageModel:
     def test_image_model_validation(self, product):
         with pytest.raises(ValidationError):
             Image.objects.create(image_file=None, product=product)
+
+    @pytest.mark.django_db
+    def test_image_product_validation(self, image_file):
+        with pytest.raises(ObjectDoesNotExist):
+            Image.objects.create(image_file=image_file, product=None)
