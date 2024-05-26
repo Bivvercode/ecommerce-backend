@@ -68,11 +68,18 @@ class TestImageModel:
         assert Image.objects.count() == 0
 
     @pytest.mark.django_db
-    def test_image_model_validation(self, product):
+    def test_image_file_cannot_be_empty(self, product):
         with pytest.raises(ValidationError):
             Image.objects.create(image_file=None, product=product)
+        assert Image.objects.count() == 0
 
     @pytest.mark.django_db
-    def test_image_product_validation(self, image_file):
+    def test_product_cannot_be_empty(self, image_file):
         with pytest.raises(ObjectDoesNotExist):
             Image.objects.create(image_file=image_file, product=None)
+        assert Image.objects.count() == 0
+
+    @pytest.mark.django_db
+    def test_image_str(self, product, image_file):
+        image = Image.objects.create(image_file=image_file, product=product)
+        assert str(image) == f'{product.name} Image'
