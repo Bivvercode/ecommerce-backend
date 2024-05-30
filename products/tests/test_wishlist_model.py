@@ -1,4 +1,5 @@
 import pytest
+from django.core.exceptions import ObjectDoesNotExist
 from products.models import Product, Wishlist, Unit, Category, ProductCategory
 from users.models import CustomerUser
 
@@ -86,3 +87,9 @@ class TestWishlistModel:
 
         assert product in wishlist1.products.all()
         assert product in wishlist2.products.all()
+
+    @pytest.mark.django_db
+    def test_create_wishlist_without_user(self):
+        with pytest.raises(ObjectDoesNotExist):
+            Wishlist.objects.create()
+        assert Wishlist.objects.count() == 0
