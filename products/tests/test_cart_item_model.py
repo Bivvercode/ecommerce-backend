@@ -142,3 +142,12 @@ class TestCartItemModel:
                 quantity=1
             )
         assert CartItem.objects.count() == 0
+
+    @pytest.mark.django_db
+    def test_cart_item_product_cannot_be_empty(self, cart):
+        with pytest.raises(ObjectDoesNotExist):
+            CartItem.objects.create(
+                cart=cart,
+                quantity=1
+            )
+        assert CartItem.objects.count() == 0
