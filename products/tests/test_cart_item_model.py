@@ -87,3 +87,28 @@ class TestCartItemModel:
         assert CartItem.objects.count() == 1
         product.delete()
         assert CartItem.objects.count() == 0
+
+    @pytest.mark.django_db
+    def test_add_multiple_products_to_cart(self, cart, product):
+        cart_item_1 = CartItem.objects.create(
+            cart=cart,
+            product=product,
+            quantity=1
+        )
+        product_2 = Product.objects.create(
+            name='Test Product 2',
+            description='This is a test product',
+            price=100.00,
+            discount=10,
+            unit=product.unit,
+            quantity_per_unit=1.00,
+            currency='USD'
+        )
+        cart_item_2 = CartItem.objects.create(
+            cart=cart,
+            product=product_2,
+            quantity=2
+        )
+        assert CartItem.objects.count() == 2
+        assert cart_item_1.quantity == 1
+        assert cart_item_2.quantity == 2
