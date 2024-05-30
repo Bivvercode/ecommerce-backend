@@ -5,7 +5,7 @@ from users.models import CustomerUser
 
 
 class TestWishlistModel:
-    '''Test cases for the Wishlist model.'''
+    """Test cases for the Wishlist model."""
 
     @pytest.fixture
     def user(self):

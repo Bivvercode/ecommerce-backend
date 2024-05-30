@@ -6,7 +6,7 @@ from users.models import CustomerUser
 
 
 class TestCartItemModel:
-    '''Test cases for the CartItem model.'''
+    """Test cases for the CartItem model."""
 
     @pytest.fixture
     def user(self):

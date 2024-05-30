@@ -8,7 +8,7 @@ from products.models import Image, Product, Unit, Category, ProductCategory
 
 
 class TestImageModel:
-    '''Test cases for the Image model.'''
+    """Test cases for the Image model."""
 
     @pytest.fixture
     def unit(self):

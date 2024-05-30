@@ -4,7 +4,7 @@ from products.models import ProductCategory, Category, Product, Unit
 
 
 class TestProductCategoryModel:
-    '''Test cases for the ProductCategory model.'''
+    """Test cases for the ProductCategory model."""
 
     @pytest.fixture
     def unit(self):
