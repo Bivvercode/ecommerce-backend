@@ -144,7 +144,7 @@ class CartItem(models.Model):
             raise ValidationError("Product cannot be empty.")
         if self.quantity <= 0:
             raise ValueError("Quantity must be greater than 0.")
-    
+
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
