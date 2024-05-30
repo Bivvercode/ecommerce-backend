@@ -1,3 +1,15 @@
+"""
+Tests for the Register view.
+
+This module contains test cases for the register view in the application.
+It tests the functionality of registering a user.
+
+Each class in this module tests a specific view, and each method
+tests a specific functionality or edge case.
+
+Classes:
+    TestRegisterView: Test cases for the Register view.
+"""
 import pytest
 from rest_framework.test import APIClient
 from django.urls import reverse
