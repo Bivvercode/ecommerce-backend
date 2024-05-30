@@ -4,7 +4,7 @@ from users.models import CustomerUser
 
 
 class TestWishlistModel:
-    """Test cases for the Wishlist model."""
+    '''Test cases for the Wishlist model.'''
 
     @pytest.fixture
     def user(self):
@@ -37,3 +37,21 @@ class TestWishlistModel:
         )
         ProductCategory.objects.create(product=product, category=category)
         return product
+
+    @pytest.mark.django_db
+    def test_create_wishlist(self, user, product):
+        wishlist = Wishlist.objects.create(user=user)
+        wishlist.products.add(product)
+
+        assert Wishlist.objects.count() == 1
+        assert wishlist.user == user
+        assert product in wishlist.products.all()
+
+    @pytest.mark.django_db
+    def test_remove_product_from_wishlist(self, user, product):
+        wishlist = Wishlist.objects.create(user=user)
+        wishlist.products.add(product)
+
+        wishlist.products.remove(product)
+
+        assert product not in wishlist.products.all()
