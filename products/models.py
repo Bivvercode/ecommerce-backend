@@ -135,6 +135,20 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
+    def clean(self) -> None:
+        super().clean()
+
+        if not self.cart:
+            raise ValidationError("Cart cannot be empty.")
+        if not self.product:
+            raise ValidationError("Product cannot be empty.")
+        if self.quantity <= 0:
+            raise ValueError("Quantity must be greater than 0.")
+    
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
 
 class Wishlist(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
