@@ -1,3 +1,15 @@
+"""
+Tests for the Password views.
+
+This module contains test cases for the password views in the application.
+It tests the functionality of changing a user's password.
+
+Each class in this module tests a specific view, and each method
+tests a specific functionality or edge case.
+
+Classes:
+    TestChangePasswordView: Test cases for the ChangePassword view.
+"""
 # pylint: disable=attribute-defined-outside-init
 import pytest
 from rest_framework.test import APIClient
