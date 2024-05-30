@@ -154,22 +154,3 @@ class Wishlist(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     products = models.ManyToManyField(Product)
-
-
-class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
-    total_price = models.DecimalField(max_digits=12, decimal_places=2)
-    status = models.CharField(max_length=200)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=9, decimal_places=2)
-    discount = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(100)]
-    )
