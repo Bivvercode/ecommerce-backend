@@ -75,3 +75,14 @@ class TestWishlistModel:
 
         assert product in wishlist.products.all()
         assert product2 in wishlist.products.all()
+
+    @pytest.mark.django_db
+    def test_add_same_product_to_multiple_wishlist(self, user, product):
+        wishlist1 = Wishlist.objects.create(user=user)
+        wishlist2 = Wishlist.objects.create(user=user)
+
+        wishlist1.products.add(product)
+        wishlist2.products.add(product)
+
+        assert product in wishlist1.products.all()
+        assert product in wishlist2.products.all()
