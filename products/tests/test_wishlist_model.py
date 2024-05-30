@@ -55,3 +55,23 @@ class TestWishlistModel:
         wishlist.products.remove(product)
 
         assert product not in wishlist.products.all()
+
+    @pytest.mark.django_db
+    def test_add_multiple_products_to_wishlist(self, user, product, category):
+        product2 = Product.objects.create(
+            name='Test Product 2',
+            description='This is a test product',
+            price=100.00,
+            discount=10,
+            unit=product.unit,
+            quantity_per_unit=1.00,
+            currency='USD'
+        )
+        ProductCategory.objects.create(product=product2,
+                                       category=category)
+
+        wishlist = Wishlist.objects.create(user=user)
+        wishlist.products.add(product, product2)
+
+        assert product in wishlist.products.all()
+        assert product2 in wishlist.products.all()
