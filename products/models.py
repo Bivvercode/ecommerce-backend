@@ -154,3 +154,13 @@ class Wishlist(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     products = models.ManyToManyField(Product)
+
+    def clean(self) -> None:
+        super().clean()
+
+        if not self.user:
+            raise ValidationError("User cannot be empty.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
