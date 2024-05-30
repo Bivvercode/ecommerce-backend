@@ -1,15 +1,37 @@
+"""
+This module contains API views for user authentication in the application.
+
+It includes views for registering a new user (RegisterView),
+logging in an existing user (LoginView), and
+logging out a currently authenticated user (LogoutView).
+
+These views use Django's built-in authentication system
+and Django Rest Framework's token-based authentication.
+
+Classes:
+    RegisterView: API view to register a new user. It creates a new user,
+                  assigns them to a group, and generates a token for them.
+    LoginView: API view to authenticate a user. It checks the provided
+               username and password, and if they are valid, it returns
+               a token for the user.
+    LogoutView: API view to logout a user. It deletes the token of the
+                authenticated user.
+"""
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
 from rest_framework import generics, permissions, status, views
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from users.models import CustomerUser
 from users.serializers import CustomerUserSerializer
-from django.db import transaction
 
 
 class RegisterView(generics.CreateAPIView):
+    """
+    API view to register a new user.
+    """
     queryset = CustomerUser.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = CustomerUserSerializer
@@ -54,9 +76,15 @@ class RegisterView(generics.CreateAPIView):
 
 
 class LoginView(views.APIView):
+    """
+    API view to login a user.
+    """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """
+        Authenticate the user and return the token.
+        """
         username = request.data.get("username")
         password = request.data.get("password")
 
@@ -70,8 +98,14 @@ class LoginView(views.APIView):
 
 
 class LogoutView(views.APIView):
+    """
+    API view to logout a user.
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        """
+        Delete the token of the authenticated user.
+        """
         request.user.auth_token.delete()
         return Response(status=status.HTTP_200_OK)
