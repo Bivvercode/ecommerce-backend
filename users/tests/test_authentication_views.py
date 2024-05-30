@@ -1,3 +1,13 @@
+"""
+Tests for the Authentication views.
+
+This module contains test cases for the authentication views in
+the application. It tests the functionality of user creation
+and login with valid credentials.
+
+Each class in this module tests a specific view, and each
+method tests a specific functionality or edge case.
+"""
 # pylint: disable=attribute-defined-outside-init
 import pytest
 from rest_framework.test import APIClient
