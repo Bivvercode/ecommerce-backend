@@ -1,3 +1,15 @@
+"""
+Tests for the Profile views.
+
+This module contains test cases for the profile views in the application.
+It tests the functionality of CRUD operations of a profile.
+
+Each class in this module tests a specific view, and each method
+tests a specific functionality or edge case.
+
+Classes:
+    TestProfileView: Test cases for the Profile view.
+"""
 # pylint: disable=attribute-defined-outside-init
 import pytest
 from rest_framework.test import APIClient
@@ -12,6 +24,7 @@ class TestProfileView:
 
     @pytest.fixture
     def create_user(self):
+        """Create a user for testing."""
         self.user = get_user_model().objects.create_user(
             username='testuser',
             password='Testpass123!',
