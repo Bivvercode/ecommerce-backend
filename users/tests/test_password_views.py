@@ -23,6 +23,7 @@ class TestChangePasswordView:
 
     @pytest.fixture
     def create_user(self):
+        """Create a user for testing."""
         self.user = get_user_model().objects.create_user(
             username='testuser',
             password='Old_password1',
