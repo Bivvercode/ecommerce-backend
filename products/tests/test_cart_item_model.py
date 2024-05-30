@@ -1,4 +1,5 @@
 import pytest
+from django.core.exceptions import ObjectDoesNotExist
 from products.models import (Cart, CartItem, Product,
                              ProductCategory, Unit, Category)
 from users.models import CustomerUser
@@ -130,5 +131,14 @@ class TestCartItemModel:
                 cart=cart,
                 product=product,
                 quantity=0
+            )
+        assert CartItem.objects.count() == 0
+
+    @pytest.mark.django_db
+    def test_cart_item_cart_cannot_be_empty(self, product):
+        with pytest.raises(ObjectDoesNotExist):
+            CartItem.objects.create(
+                product=product,
+                quantity=1
             )
         assert CartItem.objects.count() == 0
