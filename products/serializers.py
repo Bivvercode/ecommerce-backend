@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from .models import (Unit, Category, Product,
                      ProductCategory, Image, Cart,
-                     CartItem, Wishlist, Order,
-                     OrderItem)
+                     CartItem, Wishlist)
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -66,18 +65,3 @@ class WishlistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wishlist
         fields = ['id', 'user', 'products']
-
-
-class OrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = ['id', 'user', 'total_price', 'status', 'created_at']
-
-
-class OrderItemSerializer(serializers.ModelSerializer):
-    order = serializers.PrimaryKeyRelatedField(read_only=True)
-    product = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = OrderItem
-        fields = ['id', 'order', 'product', 'quantity', 'price', 'discount']
