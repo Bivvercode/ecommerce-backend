@@ -1,3 +1,17 @@
+"""
+This module contains serializers for the 'users' Django app.
+
+Serializers allow complex data such as querysets and model
+instances to be converted to native Python datatypes that can
+then be easily rendered into JSON, XML or other content types.
+
+Classes:
+    CustomerUserSerializer: Serializer for the CustomerUser model. It
+                            includes methods for validating the attributes
+                            of a CustomerUser instance (validate), updating
+                            a CustomerUser instance (update), and
+                            creating a new CustomerUser instance (create).
+"""
 import re
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
@@ -7,6 +21,13 @@ from .models import CustomerUser
 
 
 class CustomerUserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the CustomerUser model.
+
+    This serializer validates and transforms data between complex types
+    like model instances and Python datatypes that can then be
+    easily rendered into JSON, XML or other content types.
+    """
     phone_number = serializers.CharField(
         max_length=20,
         validators=[
