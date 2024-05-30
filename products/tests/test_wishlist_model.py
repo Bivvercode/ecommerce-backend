@@ -42,7 +42,7 @@ class TestWishlistModel:
     @pytest.mark.django_db
     def test_create_wishlist(self, user, product):
         wishlist = Wishlist.objects.create(user=user)
-        wishlist.products.add(product)
+        wishlist.add_product(product)
 
         assert Wishlist.objects.count() == 1
         assert wishlist.user == user
@@ -51,7 +51,7 @@ class TestWishlistModel:
     @pytest.mark.django_db
     def test_remove_product_from_wishlist(self, user, product):
         wishlist = Wishlist.objects.create(user=user)
-        wishlist.products.add(product)
+        wishlist.add_product(product)
 
         wishlist.products.remove(product)
 
@@ -72,7 +72,8 @@ class TestWishlistModel:
                                        category=category)
 
         wishlist = Wishlist.objects.create(user=user)
-        wishlist.products.add(product, product2)
+        wishlist.add_product(product)
+        wishlist.add_product(product2)
 
         assert product in wishlist.products.all()
         assert product2 in wishlist.products.all()
@@ -82,8 +83,8 @@ class TestWishlistModel:
         wishlist1 = Wishlist.objects.create(user=user)
         wishlist2 = Wishlist.objects.create(user=user)
 
-        wishlist1.products.add(product)
-        wishlist2.products.add(product)
+        wishlist1.add_product(product)
+        wishlist2.add_product(product)
 
         assert product in wishlist1.products.all()
         assert product in wishlist2.products.all()
@@ -93,3 +94,9 @@ class TestWishlistModel:
         with pytest.raises(ObjectDoesNotExist):
             Wishlist.objects.create()
         assert Wishlist.objects.count() == 0
+
+    @pytest.mark.django_db
+    def test_add_nonexistent_product_to_wishlist(self, user):
+        wishlist = Wishlist.objects.create(user=user)
+        with pytest.raises(ValueError):
+            wishlist.add_product(None)

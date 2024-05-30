@@ -164,3 +164,10 @@ class Wishlist(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+    def add_product(self, product):
+        if not isinstance(product, Product):
+            raise ValueError(
+                "Only real products can be added to the wishlist."
+            )
+        self.products.add(product)
