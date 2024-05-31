@@ -1,4 +1,16 @@
+"""
+This module contains test cases for the Cart model in the products app.
 
+Tests cover the creation and deletion of carts, as well as the cascading
+deletion of carts when their associated user is deleted.
+
+A fixture is used to create a test instance of the User model.
+This instance is used in the test cases to create and manipulate carts.
+
+Each test case is a method on the TestCartModel class,
+and uses the pytest.mark.django_db decorator to ensure that
+the database is properly set up and torn down for each test.
+"""
 from datetime import datetime
 import pytest
 from products.models import Cart
