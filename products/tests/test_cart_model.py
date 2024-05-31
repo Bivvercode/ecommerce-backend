@@ -22,6 +22,7 @@ class TestCartModel:
 
     @pytest.fixture
     def user(self):
+        """Fixture for creating a test user."""
         return CustomerUser.objects.create_user(
             username='testuser',
             password='12345',
@@ -32,6 +33,7 @@ class TestCartModel:
 
     @pytest.mark.django_db
     def test_create_cart(self, user):
+        """Test that a cart can be created with a user."""
         cart = Cart.objects.create(user=user)
         assert Cart.objects.count() == 1
         assert cart.user == user
@@ -39,6 +41,7 @@ class TestCartModel:
 
     @pytest.mark.django_db
     def test_delete_cart(self, user):
+        """Test that a cart can be deleted."""
         cart = Cart.objects.create(user=user)
         assert Cart.objects.count() == 1
         cart.delete()
@@ -46,6 +49,7 @@ class TestCartModel:
 
     @pytest.mark.django_db
     def test_user_delete_cascades(self, user):
+        """Test that deleting a user also deletes their associated cart."""
         Cart.objects.create(user=user)
         assert Cart.objects.count() == 1
         user.delete()
