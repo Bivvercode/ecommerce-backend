@@ -1,12 +1,17 @@
 """
-This module contains test cases for the Category model in the products app.
+This module contains test cases for the Image model in the products app.
 
-Tests cover the creation of categories, validation of the name field, and
-the ability to create a category with a parent category.
+Tests cover the creation and deletion of images, validation of
+the image_file and product fields, and the cascading deletion
+of images when their associated product is deleted.
 
-Each test case is a method on the TestCategoryModel class, and uses
-the pytest.mark.django_db decorator to ensure that the database is
-properly set up and torn down for each test.
+Several fixtures are used to create test instances of the Unit,
+Category, Product, and Image models. These instances are
+used in the test cases to create and manipulate images.
+
+Each test case is a method on the TestImageModel class, and
+uses the pytest.mark.django_db decorator to ensure that the
+database is properly set up and torn down for each test.
 """
 import os
 from pathlib import Path
