@@ -9,7 +9,6 @@ Each test case is a method on the TestWishlistModel class, and uses
 the pytest.mark.django_db decorator to ensure that the database
 is properly set up and torn down for each test.
 """
-
 import pytest
 from django.core.exceptions import ObjectDoesNotExist
 from products.models import Product, Wishlist, Unit, Category, ProductCategory
