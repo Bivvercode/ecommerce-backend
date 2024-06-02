@@ -18,29 +18,40 @@ class TestCategoryModel:
 
     @pytest.mark.django_db
     def test_create_category(self):
+        """Test that a category can be created with a name."""
         category = Category.objects.create(name='Electronics')
         assert Category.objects.count() == 1
         assert category.name == 'Electronics'
 
     @pytest.mark.django_db
     def test_name_field_cannot_be_empty(self):
+        """Test that a category cannot be created with an empty name."""
         with pytest.raises(ValidationError):
             Category.objects.create(name="")
 
     @pytest.mark.django_db
     def test_name_field_cannot_exceed_200_characters(self):
+        """
+        Test that a category cannot be created with a name
+        longer than 200 characters.
+        """
         name = 'a' * 201
         with pytest.raises(ValidationError):
             Category.objects.create(name=name)
 
     @pytest.mark.django_db
     def test_name_field_can_be_200_characters(self):
+        """
+        Test that a category can be created with a name
+        of exactly 200 characters.
+        """
         name = 'a' * 200
         category = Category.objects.create(name=name)
         assert category.name == name
 
     @pytest.mark.django_db
     def test_can_save_category_with_parent(self):
+        """Test that a category can be created with a parent category."""
         parent_category = Category.objects.create(name="Parent Category")
         child_category = Category.objects.create(name="Child Category",
                                                  parent=parent_category)
