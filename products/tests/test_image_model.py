@@ -1,3 +1,13 @@
+"""
+This module contains test cases for the Category model in the products app.
+
+Tests cover the creation of categories, validation of the name field, and
+the ability to create a category with a parent category.
+
+Each test case is a method on the TestCategoryModel class, and uses
+the pytest.mark.django_db decorator to ensure that the database is
+properly set up and torn down for each test.
+"""
 import os
 from pathlib import Path
 import pytest
