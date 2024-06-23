@@ -1,3 +1,27 @@
+"""
+This module defines the data models for the products application.
+
+It includes models for units of measure (Unit), product categories (Category),
+products (Product), product-category relationships (ProductCategory),
+product images (Image), shopping carts (Cart), cart items (CartItem),
+and user wishlists (Wishlist).
+
+Each model is a subclass of django.db.models.Model and defines
+a set of fields that represent the attributes of the model.
+Each model may also define methods for performing operations related to
+the model, such as validating the model's fields (clean) or
+adding a product to a wishlist (add_product).
+
+The models in this module are used to create the database
+schema for the products application.
+They are also used by the Django ORM to query the database
+and create, read, update, and delete records.
+
+This module also imports several modules from Django for
+use in the models, including models (for creating model classes),
+settings (for accessing Django settings), validators (for validating
+model fields), and exceptions (for raising exceptions in the models).
+"""
 from django.db import models
 from django.conf import settings
 from django.core.validators import (MaxValueValidator, MinValueValidator,
@@ -6,6 +30,13 @@ from django.core.exceptions import ValidationError
 
 
 class Unit(models.Model):
+    """
+    Represents a unit of measure for a product.
+
+    Attributes:
+        name (CharField): The name of the unit.
+        symbol (CharField): The symbol of the unit.
+    """
     name = models.CharField(max_length=200)
     symbol = models.CharField(max_length=9)
 
@@ -30,6 +61,13 @@ class Unit(models.Model):
 
 
 class Category(models.Model):
+    """
+    Represents a product category.
+
+    Attributes:
+        name (CharField): The name of the category.
+        parent (ForeignKey): The parent category, if any.
+    """
     name = models.CharField(max_length=200)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL,
                                null=True, blank=True)
@@ -51,6 +89,19 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    """
+    Represents a product.
+
+    Attributes:
+        name (CharField): The name of the product.
+        description (TextField): The description of the product.
+        price (DecimalField): The price of the product.
+        discount (IntegerField): The discount on the product.
+        unit (ForeignKey): The unit of measure for the product.
+        quantity_per_unit (DecimalField): The quantity per unit of the product.
+        currency (CharField): The currency of the product.
+        categories (ManyToManyField): The categories the product belongs to.
+    """
     name = models.CharField(max_length=200)
     description = models.TextField()
     price = models.DecimalField(max_digits=9, decimal_places=2)
@@ -100,11 +151,25 @@ class Product(models.Model):
 
 
 class ProductCategory(models.Model):
+    """
+    Represents the many-to-many relationship between products and categories.
+
+    Attributes:
+        product (ForeignKey): The product.
+        category (ForeignKey): The category.
+    """
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
 class Image(models.Model):
+    """
+    Represents an image of a product.
+
+    Attributes:
+        image_file (ImageField): The image file.
+        product (ForeignKey): The product the image is of.
+    """
     image_file = models.ImageField(upload_to='product_images/')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
@@ -125,12 +190,27 @@ class Image(models.Model):
 
 
 class Cart(models.Model):
+    """
+    Represents a user's shopping cart.
+
+    Attributes:
+        user (ForeignKey): The user who owns the cart.
+        created_at (DateTimeField): The date and time the cart was created.
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class CartItem(models.Model):
+    """
+    Represents an item in a shopping cart.
+
+    Attributes:
+        cart (ForeignKey): The cart the item is in.
+        product (ForeignKey): The product the item is.
+        quantity (IntegerField): The quantity of the product in the cart.
+    """
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
@@ -151,6 +231,13 @@ class CartItem(models.Model):
 
 
 class Wishlist(models.Model):
+    """
+    Represents a user's wishlist.
+
+    Attributes:
+        user (ForeignKey): The user who owns the wishlist.
+        products (ManyToManyField): The products in the wishlist.
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     products = models.ManyToManyField(Product)
@@ -166,6 +253,12 @@ class Wishlist(models.Model):
         super().save(*args, **kwargs)
 
     def add_product(self, product):
+        """
+        Adds a product to the wishlist.
+
+        Args:
+            product (Product): The product to add.
+        """
         if not isinstance(product, Product):
             raise ValueError(
                 "Only real products can be added to the wishlist."
