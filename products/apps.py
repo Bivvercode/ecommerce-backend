@@ -1,3 +1,9 @@
+"""
+This module contains the configuration for the 'products' Django app.
+
+Classes:
+    ProductsConfig: Configuration for the 'products' Django app.
+"""
 from django.apps import AppConfig
 
 
