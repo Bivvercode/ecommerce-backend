@@ -31,7 +31,7 @@ class UnitAdmin(admin.ModelAdmin):
     """
     Admin interface options for Unit model.
     """
-    list_display = ('name', 'description')
+    list_display = ('name', 'symbol')
     search_fields = ('name',)
 
 
@@ -47,8 +47,9 @@ class ProductAdmin(admin.ModelAdmin):
     """
     Admin interface options for Product model.
     """
-    list_display = ('name', 'price', 'available', 'category')
-    list_filter = ('available', 'category')
+    list_display = ('name', 'price', 'discount',
+                    'unit', 'quantity_per_unit', 'currency')
+    list_filter = ('unit', 'currency')
     search_fields = ('name', 'description')
 
 
@@ -65,7 +66,7 @@ class ImageAdmin(admin.ModelAdmin):
     """
     Admin interface options for Image model.
     """
-    list_display = ('product', 'image')
+    list_display = ('product', 'image_file')
     search_fields = ('product__name',)
 
 
@@ -90,7 +91,7 @@ class WishlistAdmin(admin.ModelAdmin):
     """
     Admin interface options for Wishlist model.
     """
-    list_display = ('user', 'created_at')
+    list_display = ('user',)
     search_fields = ('user__username',)
 
 
