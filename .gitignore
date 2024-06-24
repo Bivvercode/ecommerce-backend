@@ -164,3 +164,6 @@ settings.json
 
 # Test coverage report
 cov.xml
+
+# Product images
+product_images/
