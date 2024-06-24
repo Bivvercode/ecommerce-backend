@@ -17,8 +17,10 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    unit = serializers.PrimaryKeyRelatedField(read_only=True)
-    categories = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    unit = serializers.PrimaryKeyRelatedField(queryset=Unit.objects.all())
+    categories = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Category.objects.all()
+    )
 
     class Meta:
         model = Product
@@ -28,8 +30,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(read_only=True)
-    category = serializers.PrimaryKeyRelatedField(read_only=True)
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all()
+    )
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all()
+    )
 
     class Meta:
         model = ProductCategory
@@ -37,7 +43,9 @@ class ProductCategorySerializer(serializers.ModelSerializer):
 
 
 class ImageSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(read_only=True)
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all()
+    )
 
     class Meta:
         model = Image
@@ -51,8 +59,12 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class CartItemSerializer(serializers.ModelSerializer):
-    cart = serializers.PrimaryKeyRelatedField(read_only=True)
-    product = serializers.PrimaryKeyRelatedField(read_only=True)
+    cart = serializers.PrimaryKeyRelatedField(
+        queryset=Cart.objects.all()
+    )
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all()
+    )
 
     class Meta:
         model = CartItem
