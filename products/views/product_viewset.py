@@ -31,7 +31,12 @@ class ProductViewSet(viewsets.ModelViewSet):
 
                 serializer = self.get_serializer(product)
                 headers = self.get_success_headers(serializer.data)
-                return Response(serializer.data,
+
+                response_data = serializer.data.copy()
+                response_data['categories'] = category_names
+                response_data['unit'] = unit_name
+
+                return Response(response_data,
                                 status=status.HTTP_201_CREATED,
                                 headers=headers)
             return Response(serializer.errors,
