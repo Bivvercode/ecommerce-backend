@@ -1,8 +1,8 @@
-import base64
 from rest_framework import status, viewsets, permissions
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
-from django.core.files.base import ContentFile
-from products.models import Product, Category, Image
+from django.db import transaction
+from products.models import Product, Category, Image, Unit
 from products.serializers import ProductSerializer
 
 
@@ -12,32 +12,55 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            product = serializer.save(commit=False)
+        with transaction.atomic():
+            category_names = request.data.getlist('categories', [])
+            unit_name = request.data.get('unit', None)
 
-            self.handle_categories(product, request.data.get('categories', []))
-            self.handle_image_upload(product, request.data.get('image'))
+            categories = self.handle_categories(category_names)
+            unit = self.handle_unit(unit_name)
 
-            serializer = self.get_serializer(product)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED,
-                            headers=headers)
-        return Response(serializer.errors,
-                        status=status.HTTP_400_BAD_REQUEST)
+            request_data = request.data.copy()
+            request_data['categories'] = categories
+            request_data['unit'] = unit
 
-    def handle_categories(self, product, categories_data):
+            serializer = self.get_serializer(data=request_data)
+            if serializer.is_valid():
+                product = serializer.save()
+
+                self.handle_image_upload(product, request.FILES.get('image'))
+
+                serializer = self.get_serializer(product)
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data,
+                                status=status.HTTP_201_CREATED,
+                                headers=headers)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def handle_categories(self, categories_data) -> list[int]:
         if categories_data:
-            categories = [Category.objects.get_or_create(name=category_name)[0]
-                          for category_name in categories_data]
-            product.categories.set(categories)
+            categories = []
+            for name in categories_data:
+                try:
+                    category = Category.objects.get(name=name)
+                    categories.append(category.id)
+                except Category.DoesNotExist as exc:
+                    raise NotFound(
+                        detail=f"Category '{name}' not found"
+                    ) from exc
+            return categories
+        return []
 
-    def handle_image_upload(self, product, image_data):
-        if image_data:
-            image_format, imgstr = image_data.split(';base64,')
-            ext = image_format.split('/')[-1]
-            image_file = ContentFile(
-                base64.b64decode(imgstr), name=f'{product.name}.{ext}'
-            )
-            Image.objects.create(image_file=image_file, product=product)
+    def handle_image_upload(self, product, image_file) -> None:
+        if image_file:
+            Image.objects.create(product=product, image_file=image_file)
+
+    def handle_unit(self, unit_data) -> int:
+        if unit_data:
+            try:
+                unit = Unit.objects.get(name=unit_data)
+                unit_id = unit.id
+                return unit_id
+            except Unit.DoesNotExist as exc:
+                raise NotFound(detail=f"Unit '{unit_data}' not found") from exc
+        raise NotFound(detail="Unit cannot be empty")

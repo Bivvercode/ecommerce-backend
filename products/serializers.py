@@ -19,7 +19,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     unit = serializers.PrimaryKeyRelatedField(queryset=Unit.objects.all())
     categories = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Category.objects.all()
+        many=True, queryset=Category.objects.all(), required=False
     )
 
     class Meta:
@@ -27,6 +27,48 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'price',
                   'discount', 'unit', 'quantity_per_unit',
                   'currency', 'categories']
+
+    def to_internal_value(self, data):
+        categories = data.get('categories', '')
+        if isinstance(categories, str):
+            try:
+                categories_ids = [int(id_str) for id_str
+                                  in categories.split(',')]
+            except ValueError as exc:
+                raise serializers.ValidationError(
+                    {'categories':
+                     'Categories must be a comma-separated list of IDs.'}
+                ) from exc
+        elif isinstance(categories, list):
+            try:
+                categories_ids = [int(id) for id in categories]
+            except ValueError as exc:
+                raise serializers.ValidationError(
+                    {'categories': 'Categories must be a list of IDs.'}
+                ) from exc
+        else:
+            raise serializers.ValidationError(
+                {'categories': 'Invalid format for categories.'}
+            )
+
+        data.setlist('categories', categories_ids)
+        return super().to_internal_value(data)
+
+    def create(self, validated_data):
+        categories_data = validated_data.pop('categories', [])
+        product = Product.objects.create(**validated_data)
+        product.categories.set(categories_data)
+        return product
+
+    def update(self, instance, validated_data):
+        categories_data = validated_data.pop('categories', None)
+        if categories_data is not None:
+            instance.categories.set(categories_data)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
