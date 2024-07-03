@@ -18,12 +18,26 @@ from products.serializers import ProductSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
+    """
+    Extends the default ModelViewSet from Django REST Framework to provide
+    custom behavior for handling Product instances. This includes overriding
+    the `create` and `update` methods to support multipart form data,
+    and to ensure atomic transactions for data integrity. Custom methods
+    for handling related objects like categories and units are also defined.
+    """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     parser_classes = (MultiPartParser, FormParser)
 
     def create(self, request, *args, **kwargs):
+        """
+        Overrides the default `create` method to handle multipart form data.
+        This method processes not only the standard fields for a Product
+        instance but also includes custom handling for categories, unit,
+        and image file uploads, requiring specific implementation details
+        for these fields. Ensures atomic transactions for data integrity.
+        """
         with transaction.atomic():
             category_names = request.data.getlist('categories', [])
             unit_name = request.data.get('unit', None)
@@ -51,6 +65,13 @@ class ProductViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
+        """
+        Overrides the default `update` method to handle multipart form data,
+        including the standard fields for a Product instance. This method
+        also includes custom handling for updating categories, unit, and
+        managing image file replacement, highlighting the need for specific
+        implementation for these fields in an atomic transaction.
+        """
         with transaction.atomic():
             pk = kwargs.get('pk')
             product = get_object_or_404(Product, pk=pk)
@@ -95,6 +116,10 @@ class ProductViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
     def handle_categories(self, categories_data) -> list[int]:
+        """
+        Custom method to process category names from
+        the request into category IDs.
+        """
         if categories_data:
             categories = []
             for name in categories_data:
@@ -109,10 +134,17 @@ class ProductViewSet(viewsets.ModelViewSet):
         return []
 
     def handle_image_upload(self, product, image_file) -> None:
+        """
+        Custom method to handle the upload of an image file
+        for a Product instance.
+        """
         if image_file:
             Image.objects.create(product=product, image_file=image_file)
 
     def handle_unit(self, unit_data) -> int:
+        """
+        Custom method to convert a unit name from the request into a unit ID.
+        """
         if unit_data:
             try:
                 unit = Unit.objects.get(name=unit_data)
