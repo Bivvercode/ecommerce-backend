@@ -22,13 +22,14 @@ class ProductSerializer(serializers.ModelSerializer):
         many=True, queryset=Category.objects.all(), required=False
     )
     categories_details = serializers.SerializerMethodField()
+    unit_details = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price',
                   'discount', 'unit', 'quantity_per_unit',
-                  'currency', 'categories',
+                  'currency', 'categories', 'unit_details',
                   'categories_details', 'image_url']
 
     def get_categories_details(self, obj):
@@ -42,6 +43,10 @@ class ProductSerializer(serializers.ModelSerializer):
         except Image.DoesNotExist:
             return None
         return request.build_absolute_uri(image_instance.image_file.url)
+
+    def get_unit_details(self, obj):
+        return {'id': obj.unit.id, 'name': obj.unit.name,
+                'symbol': obj.unit.symbol}
 
     def to_internal_value(self, data):
         categories = data.get('categories', '')
@@ -84,6 +89,15 @@ class ProductSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+
+    def to_representation(self, instance):
+        """
+        Modify the output representation.
+        """
+        ret = super().to_representation(instance)
+        ret.pop('categories', None)
+        ret.pop('unit', None)
+        return ret
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
