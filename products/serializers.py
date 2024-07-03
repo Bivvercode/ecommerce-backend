@@ -5,18 +5,33 @@ from .models import (Unit, Category, Product,
 
 
 class UnitSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Unit model. Converts Unit instances into
+    JSON format and vice versa.
+    """
     class Meta:
         model = Unit
         fields = ['id', 'name', 'symbol']
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """
+    Serializer for Category model. Handles conversion of
+    Category instances toJSON format and back, including
+    handling of hierarchical relationships if present.
+    """
     class Meta:
         model = Category
         fields = ['id', 'name', 'parent']
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Product model. Manages serialization of Product instances,
+    including related fields like unit and categories. Provides custom fields
+    to represent detailed views of related objects
+    and handles image URL construction.
+    """
     unit = serializers.PrimaryKeyRelatedField(queryset=Unit.objects.all())
     categories = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Category.objects.all(), required=False
@@ -33,10 +48,17 @@ class ProductSerializer(serializers.ModelSerializer):
                   'categories_details', 'image_url']
 
     def get_categories_details(self, obj):
+        """
+        Returns detailed information for each category
+        associated with the product.
+        """
         return [{'id': category.id, 'name': category.name}
                 for category in obj.categories.all()]
 
     def get_image_url(self, obj):
+        """
+        Constructs and returns the absolute URL for the product's image.
+        """
         request = self.context.get('request')
         try:
             image_instance = Image.objects.get(product=obj)
@@ -45,10 +67,19 @@ class ProductSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(image_instance.image_file.url)
 
     def get_unit_details(self, obj):
+        """
+        Returns detailed information for the unit associated with the product.
+        """
         return {'id': obj.unit.id, 'name': obj.unit.name,
                 'symbol': obj.unit.symbol}
 
     def to_internal_value(self, data):
+        """
+        Custom method to handle conversion of input data into a format
+        suitable for creating or updating Product instances,
+        particularly for handling categories as
+        a list or comma-separated values.
+        """
         categories = data.get('categories', '')
         if isinstance(categories, str):
             try:
@@ -75,12 +106,20 @@ class ProductSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
     def create(self, validated_data):
+        """
+        Custom create method to handle the creation of
+        Product instances, including setting categories.
+        """
         categories_data = validated_data.pop('categories', [])
         product = Product.objects.create(**validated_data)
         product.categories.set(categories_data)
         return product
 
     def update(self, instance, validated_data):
+        """
+        Custom update method to handle updating Product
+        instances, including updating categories.
+        """
         categories_data = validated_data.pop('categories', None)
         if categories_data is not None:
             instance.categories.set(categories_data)
@@ -92,7 +131,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """
-        Modify the output representation.
+        Custom method to modify the default serialization behavior,
+        particularly to exclude certain fields from the output representation.
         """
         ret = super().to_representation(instance)
         ret.pop('categories', None)
@@ -101,6 +141,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
+    """
+    Serializer for ProductCategory model. Handles serialization
+    of ProductCategory instances, which represent the
+    many-to-many relationship between products and categories.
+    """
     product = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all()
     )
@@ -114,6 +159,10 @@ class ProductCategorySerializer(serializers.ModelSerializer):
 
 
 class ImageSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Image model. Manages serialization of Image instances,
+    including constructing absolute URLs for image files.
+    """
     product = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all()
     )
@@ -124,18 +173,30 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image_file', 'product', 'image_url']
 
     def get_image_url(self, obj):
+        """
+        Constructs and returns the absolute URL for an image file.
+        """
         request = self.context.get('request')
         image_url = obj.image_file.url
         return request.build_absolute_uri(image_url)
 
 
 class CartSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Cart model. Handles serialization of
+    Cart instances, representing a user's shopping cart.
+    """
     class Meta:
         model = Cart
         fields = ['id', 'user', 'created_at']
 
 
 class CartItemSerializer(serializers.ModelSerializer):
+    """
+    Serializer for CartItem model. Manages serialization of CartItem
+    instances, which represent individual items within a
+    shopping cart, including product and quantity.
+    """
     cart = serializers.PrimaryKeyRelatedField(
         queryset=Cart.objects.all()
     )
@@ -149,6 +210,11 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 
 class WishlistSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Wishlist model. Handles serialization of
+    Wishlist instances, representing a user's
+    collection of desired products.
+    """
     products = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
