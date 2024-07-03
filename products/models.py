@@ -143,10 +143,13 @@ class Product(models.Model):
             raise ValidationError("Discount must be between 0 and 100.")
 
     def delete(self, *args, **kwargs):
-        image = Image.objects.get(product=self)
-        if image.image_file:
-            image.image_file.delete(save=False)
-        image.delete()
+        try:
+            image = Image.objects.get(product=self)
+            if image.image_file:
+                image.image_file.delete(save=False)
+            image.delete()
+        except Image.DoesNotExist:
+            pass
         super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
