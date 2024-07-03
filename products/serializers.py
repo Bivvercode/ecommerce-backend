@@ -21,12 +21,17 @@ class ProductSerializer(serializers.ModelSerializer):
     categories = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Category.objects.all(), required=False
     )
+    categories_details = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price',
                   'discount', 'unit', 'quantity_per_unit',
-                  'currency', 'categories']
+                  'currency', 'categories', 'categories_details']
+
+    def get_categories_details(self, obj):
+        return [{'id': category.id, 'name': category.name}
+                for category in obj.categories.all()]
 
     def to_internal_value(self, data):
         categories = data.get('categories', '')
