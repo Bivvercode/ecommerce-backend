@@ -1,3 +1,19 @@
+"""
+This module defines serializers for various models in the application.
+Serializers are responsible for converting models into JSON format
+for API responses, and for validating and deserializing
+input data to Django model instances.
+
+The serializers cover a range of models including Unit, Category,
+Product, ProductCategory, Image, Cart, CartItem, and Wishlist.
+Each serializer handles the intricacies of its respective
+model, such as managing many-to-many relationships, custom
+field serialization, and image URL construction.
+
+Each serializer is equipped with custom methods as needed to
+support the unique requirements of the application's data
+representation and manipulation.
+"""
 from rest_framework import serializers
 from .models import (Unit, Category, Product,
                      ProductCategory, Image, Cart,
