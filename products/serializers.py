@@ -22,16 +22,26 @@ class ProductSerializer(serializers.ModelSerializer):
         many=True, queryset=Category.objects.all(), required=False
     )
     categories_details = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price',
                   'discount', 'unit', 'quantity_per_unit',
-                  'currency', 'categories', 'categories_details']
+                  'currency', 'categories',
+                  'categories_details', 'image_url']
 
     def get_categories_details(self, obj):
         return [{'id': category.id, 'name': category.name}
                 for category in obj.categories.all()]
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        try:
+            image_instance = Image.objects.get(product=obj)
+        except Image.DoesNotExist:
+            return None
+        return request.build_absolute_uri(image_instance.image_file.url)
 
     def to_internal_value(self, data):
         categories = data.get('categories', '')
@@ -93,10 +103,16 @@ class ImageSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all()
     )
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Image
-        fields = ['id', 'image_file', 'product']
+        fields = ['id', 'image_file', 'product', 'image_url']
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        image_url = obj.image_file.url
+        return request.build_absolute_uri(image_url)
 
 
 class CartSerializer(serializers.ModelSerializer):
