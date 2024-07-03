@@ -1,3 +1,12 @@
+"""
+This module defines the viewset for the Product model, handling the creation,
+retrieval, update, and deletion of product instances via API requests.
+It supports multipart form data to accommodate file uploads for product images,
+and it uses transactional operations to ensure data integrity during create
+and update actions. The viewset also includes custom handling for related
+objects such as categories and units, ensuring they are properly associated
+with the product instances.
+"""
 from rest_framework import status, viewsets, permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.parsers import MultiPartParser, FormParser
