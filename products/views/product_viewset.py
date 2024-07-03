@@ -1,7 +1,9 @@
 from rest_framework import status, viewsets, permissions
 from rest_framework.exceptions import NotFound
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from products.models import Product, Category, Image, Unit
 from products.serializers import ProductSerializer
 
@@ -10,6 +12,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    parser_classes = (MultiPartParser, FormParser)
 
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
@@ -38,6 +41,54 @@ class ProductViewSet(viewsets.ModelViewSet):
 
                 return Response(response_data,
                                 status=status.HTTP_201_CREATED,
+                                headers=headers)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        with transaction.atomic():
+            pk = kwargs.get('pk')
+            product = get_object_or_404(Product, pk=pk)
+
+            category_names = request.data.getlist('categories', [])
+            unit_name = request.data.get('unit', None)
+
+            categories = self.handle_categories(category_names)
+            unit = self.handle_unit(unit_name)
+
+            request_data = request.data.copy()
+            request_data['categories'] = categories
+            request_data['unit'] = unit
+
+            serializer = self.get_serializer(
+                product,
+                data=request_data,
+                partial=True
+            )
+
+            if serializer.is_valid():
+                product = serializer.save()
+
+                new_image = request.FILES.get('image')
+                print(request.FILES)
+                if new_image:
+                    try:
+                        old_image = Image.objects.get(product=product)
+                        old_image.image_file.delete(save=False)
+                        old_image.delete()
+                    except Image.DoesNotExist:
+                        pass
+                    self.handle_image_upload(product, new_image)
+
+                serializer = self.get_serializer(product)
+                headers = self.get_success_headers(serializer.data)
+
+                response_data = serializer.data.copy()
+                response_data['categories'] = category_names
+                response_data['unit'] = unit_name
+
+                return Response(response_data,
+                                status=status.HTTP_200_OK,
                                 headers=headers)
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
